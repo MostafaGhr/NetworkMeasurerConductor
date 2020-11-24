@@ -1,0 +1,21 @@
+{
+  "name": "networkmeasurerconductor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@codeberg.org:MostafaGhr/NetworkMeasurerConductor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "json2csv": "^5.0.5",
+    "mqtt": "^4.2.5",
+    "nodemon": "^2.0.6"
+  }
+}
