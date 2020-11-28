@@ -1,7 +1,9 @@
 const express = require('express');
+var session = require('express-session');
 const app = express();
 const fs = require('fs');
 const { Parser } = require('json2csv');
+var path = require('path');
 
 var mqtt = require('mqtt')
 
@@ -9,6 +11,24 @@ var client = mqtt.connect('mqtt://localhost')
 
 client_list = []
 saveDirectory = "./results/"
+//ejs
+
+app.set('view engine', 'ejs');
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
+app.engine('html', require('ejs').renderFile);
+app.use(express.static(__dirname + '/static'));
+// app.set('views', './template')
+app.use(function(req, res, next) {
+	res.locals.session = req.session;
+	next();
+});
+// app.use(bodyParser.urlencoded({extended : true}));
+// app.use(bodyParser.json());
+// end ejs
 
 // topics
 statusTopic = "status"
@@ -86,7 +106,7 @@ client.on('message', function (topic, message) {
 
 
 app.get("/", (request, result) => {
-  result.send(client_list);
+  result.render(path.join(__dirname + '/template/index'),);
 });
 
 
