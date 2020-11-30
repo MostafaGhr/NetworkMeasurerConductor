@@ -1,9 +1,20 @@
-{
-    "20":{
-        "traceIntervals":"",
-        "iperfIntervals":"",
-        "iperfOptions":"",
-        "traceDepth":"",
-        "traceDestination":""
-    }
-}
+[
+  {
+    "ID": "20",
+    "place": "room1",
+    "traceIntervals": "* */1 * * * ? *",
+    "iperfIntervals": "* */1 * * * ? *",
+    "iperfOptions": "",
+    "traceDepth": "3",
+    "traceDestination": "google.com"
+  },
+  {
+    "ID": "22",
+    "place": "room2",
+    "traceIntervals": "* */1 * * * ? *",
+    "iperfIntervals": "* */1 * * * ? *",
+    "iperfOptions": "",
+    "traceDepth": "3",
+    "traceDestination": "google.com"
+  }
+]
