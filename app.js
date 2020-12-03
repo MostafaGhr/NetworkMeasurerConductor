@@ -57,7 +57,6 @@ client.on("message", function (topic, message) {
     console.log("node " + parsedTopic[1] + " is " + message);
     if (message == "on") {
       client_list.push(parsedTopic[1]);
-
       db.all(
         `select * from nodes, ping where nodes.node_id=${parsedTopic[1]} and nodes.node_id=ping.node_id`,
         (err, rows) => {
@@ -65,23 +64,55 @@ client.on("message", function (topic, message) {
             if (row["start_on_boot"]) {
               client.publish(`${parsedTopic[1]}/ping/start`, JSON.stringify(row));
             }
-            // scheduler(row["node_id"], client_list, cron_trace, row["traceIntervals"], () => {
-            //   client.publish(`${row["node_id"]}/traceReset`, "");
-            // });
-            // scheduler(row["node_id"], client_list, cron_iperf, row["iperfIntervals"], () => {
-            //   client.publish(`${row["node_id"]}/startTest`, "");
-            // });
+          });
+        }
+      );
+      db.all(
+        `select * from nodes, trace where nodes.node_id=${parsedTopic[1]} and nodes.node_id=trace.node_id`,
+        (err, rows) => {
+          rows.forEach((row) => {
+            if (row["start_on_boot"]) {
+              scheduler(parsedTopic[1], row["trace_id"], client_list, cron_trace, row["interval"], () => {
+                client.publish(`${row["node_id"]}/traceReset`, JSON.stringify(row));
+              });
+            }
+          });
+        }
+      );
+      db.all(
+        `select * from nodes, iperf where nodes.node_id=${parsedTopic[1]} and nodes.node_id=iperf.node_id`,
+        (err, rows) => {
+          rows.forEach((row) => {
+            if (row["start_on_boot"]) {
+              scheduler(parsedTopic[1], row["iperf_id"], client_list, cron_iperf, row["interval"], () => {
+                client.publish(`${row["node_id"]}/startTest`, JSON.stringify(row));
+              });
+            }
           });
         }
       );
     } else if (message == "off") {
-      // console.log("off message");
       client_list.splice(client_list.indexOf(parsedTopic[1]), 1);
-
-      db.get(`select * from nodes where node_id=${parsedTopic[1]}`, (err, row) => {
-        schedulerStop(row["node_id"], client_list, cron_trace);
-        schedulerStop(row["node_id"], client_list, cron_iperf);
-      });
+      db.all(
+        `select * from nodes, trace where nodes.node_id=${parsedTopic[1]} and nodes.node_id=trace.node_id`,
+        (err, rows) => {
+          rows.forEach((row) => {
+            if (row["start_on_boot"]) {
+              schedulerStop(row["node_id"], row["trace_id"], client_list, cron_trace);
+            }
+          });
+        }
+      );
+      db.all(
+        `select * from nodes, iperf where nodes.node_id=${parsedTopic[1]} and nodes.node_id=iperf.node_id`,
+        (err, rows) => {
+          rows.forEach((row) => {
+            if (row["start_on_boot"]) {
+              schedulerStop(row["node_id"], row["iperf_id"], client_list, cron_iperf);
+            }
+          });
+        }
+      );
     }
   }
 
@@ -207,7 +238,8 @@ app.post("/trace", (request, response) => {
     if (!err) {
       sql = `update trace set
       node_id='${request.body["node-id"]}' ,interval='${request.body["trace-interval"]}',
-      dest='${request.body["trace-dest"]}', depth='${request.body["trace-depth"]}'
+      dest='${request.body["trace-dest"]}', depth='${request.body["trace-depth"]}',
+      start_on_boot=${request.body["trace-start"]}
       where trace_id=${traceID}`;
       db.run(sql, (err) => {
         if (!err) {
@@ -223,7 +255,7 @@ app.post("/trace-start", (request, response) => {
     if (request.body[attr] == "on") {
       db.all(`select * from nodes, trace where nodes.node_id=${attr} and nodes.node_id=trace.node_id`, (err, rows) => {
         rows.forEach((row) => {
-          scheduler(attr, client_list, cron_trace, row["interval"], () => {
+          scheduler(attr, row["trace_id"], client_list, cron_trace, row["interval"], () => {
             client.publish(`${row["node_id"]}/traceReset`, JSON.stringify(row));
           });
         });
@@ -236,7 +268,11 @@ app.post("/trace-start", (request, response) => {
 app.post("/trace-stop", (request, response) => {
   for (var attr in request.body) {
     if (request.body[attr] == "on") {
-      schedulerStop(attr, client_list, cron_trace);
+      db.all(`select * from nodes, trace where nodes.node_id=${attr} and nodes.node_id=trace.node_id`, (err, rows) => {
+        rows.forEach((row) => {
+          schedulerStop(attr, row["trace_id"], client_list, cron_trace);
+        });
+      });
     }
   }
   response.redirect("/trace");
@@ -258,7 +294,8 @@ app.post("/iperf", (request, response) => {
       sql = `update iperf set
       node_id='${request.body["node-id"]}', interval='${request.body["iperf-interval"]}',
       option1='${request.body["iperf-opt1"]}', option2='${request.body["iperf-opt2"]}',
-      server_ip='${request.body["iperf-server"]}', server_port='${request.body["iperf-port"]}'
+      server_ip='${request.body["iperf-server"]}', server_port='${request.body["iperf-port"]}',
+      start_on_boot=${request.body["iperf-start"]}
       where iperf_id=${iperfID}`;
       db.run(sql, (err) => {
         if (!err) {
@@ -274,7 +311,7 @@ app.post("/iperf-start", (request, response) => {
     if (request.body[attr] == "on") {
       db.all(`select * from nodes, iperf where nodes.node_id=${attr} and nodes.node_id=iperf.node_id`, (err, rows) => {
         rows.forEach((row) => {
-          scheduler(attr, client_list, cron_iperf, row["interval"], () => {
+          scheduler(attr, row["iperf_id"], client_list, cron_iperf, row["interval"], () => {
             client.publish(`${row["node_id"]}/startTest`, JSON.stringify(row));
           });
         });
@@ -287,39 +324,33 @@ app.post("/iperf-start", (request, response) => {
 app.post("/iperf-stop", (request, response) => {
   for (var attr in request.body) {
     if (request.body[attr] == "on") {
-      schedulerStop(attr, client_list, cron_iperf);
+      db.all(`select * from nodes, iperf where nodes.node_id=${attr} and nodes.node_id=iperf.node_id`, (err, rows) => {
+        rows.forEach((row) => {
+          schedulerStop(attr, row["iperf_id"], client_list, cron_iperf);
+        });
+      });
     }
   }
   response.redirect("/iperf");
 });
 
-function scheduler(nodeID, node_list, cron_obj, scheduleTime, callback) {
+function scheduler(nodeID, jobID, node_list, cron_obj, scheduleTime, callback) {
   // may occur problem with multiple obj of same key
   if (node_list.includes(nodeID.toString())) {
-    if (cron_obj[nodeID] !== undefined) {
-      // cron_obj[nodeID].stop();
-      cron_obj[nodeID].forEach((cron) => {
-        cron.stop();
-      });
-      cron_obj[nodeID] = [];
+    if (cron_obj[jobID] !== undefined) {
+      cron_obj[jobID].stop();
     }
-    t = new CronJob(scheduleTime, () => {
+    cron_obj[jobID] = new CronJob(scheduleTime, () => {
       callback();
     });
-    t.start();
-    cron_obj[nodeID] = [];
-    cron_obj[nodeID].push(t);
+    cron_obj[jobID].start();
   }
 }
 
-function schedulerStop(nodeID, node_list, cron_obj) {
+function schedulerStop(nodeID, jobID, node_list, cron_obj) {
   if (node_list.includes(nodeID.toString())) {
-    if (cron_obj[nodeID] !== undefined) {
-      // cron_obj[nodeID].stop();
-      cron_obj[nodeID].forEach((cron) => {
-        cron.stop();
-      });
-      cron_obj[nodeID] = [];
+    if (cron_obj[jobID] !== undefined) {
+      cron_obj[jobID].stop();
     }
   }
 }

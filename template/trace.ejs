@@ -57,6 +57,7 @@
                               <th>Count</th>
                               <th>Trace ID</th>
                               <th>Node ID</th>
+                              <th>start on boot</th>
                               <th>interval</th>
                               <th>dest</th>
                               <th>depth</th>
@@ -71,6 +72,12 @@
                                 <td><%= i+1 %></td>
                                 <td><%= trace[i]["trace_id"] %></td>
                                 <td><input value="<%= trace[i]["node_id"] %>" name="node-id" placeholder="node-id"></td>
+                                <td>
+                                  <select type="number" name="trace-start" placeholder="start on boot">
+                                    <option <% if (trace[i]["start_on_boot"]) { %>selected="selected"<% } %>>1</option>
+                                    <option <% if (!trace[i]["start_on_boot"]) { %>selected="selected"<% } %>>0</option>
+                                  </select>
+                                </td>
                                 <td>
                                   <input value="<%= trace[i]["interval"] %>" name="trace-interval" placeholder="trace
                                   interval">

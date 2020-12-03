@@ -57,6 +57,7 @@
                               <th>Count</th>
                               <th>Iperf ID</th>
                               <th>Node ID</th>
+                              <th>start on boot</th>
                               <th>interval</th>
                               <th>Option 1</th>
                               <th>Option 2</th>
@@ -73,6 +74,12 @@
                                 <td><%= i+1 %></td>
                                 <td><%= iperf[i]["iperf_id"] %></td>
                                 <td><input value="<%= iperf[i]["node_id"] %>" name="node-id" placeholder="node-id"></td>
+                                <td>
+                                  <select type="number" name="iperf-start" placeholder="start on boot">
+                                    <option <% if (iperf[i]["start_on_boot"]) { %>selected="selected"<% } %>>1</option>
+                                    <option <% if (!iperf[i]["start_on_boot"]) { %>selected="selected"<% } %>>0</option>
+                                  </select>
+                                </td>
                                 <td>
                                   <input value="<%= iperf[i]["interval"] %>" name="iperf-interval" placeholder="iperf
                                   interval">

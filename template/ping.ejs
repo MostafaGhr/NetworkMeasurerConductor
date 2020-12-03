@@ -30,7 +30,7 @@
                       <div class="row">
                         <div class="col-12">
                           <div class="row">
-                            <p>start</p>
+                            <p>start </p>
                             <form action="ping-start" method="POST">
                               <% for( let i = 0; i < nodes.length; i++ ) { %>
                               <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
@@ -40,7 +40,7 @@
                             </form>
                           </div>
                           <div class="row">
-                            <p>stop</p>
+                            <p>stop </p>
                             <form action="ping-stop" method="POST">
                               <% for( let i = 0; i < nodes.length; i++ ) { %>
                               <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
@@ -77,11 +77,10 @@
                                   <td>
                                     <input value="<%= ping[i]["node_id"] %>" name="node-id" placeholder="node-id">
                                   </td>
-                                  <!-- <td><input type="number" min="0" max="1" value="<%= ping[i]["start_on_boot"] %>" name="ping-start" placeholder="start on boot"></td> -->
                                   <td>
                                     <select type="number" name="ping-start" placeholder="start on boot">
-                                      <option>1</option>
-                                      <option>0</option>
+                                      <option <% if (ping[i]["start_on_boot"]) { %>selected="selected"<% } %>>1</option>
+                                      <option <% if (!ping[i]["start_on_boot"]) { %>selected="selected"<% } %>>0</option>
                                     </select>
                                   </td>
                                   <td>
