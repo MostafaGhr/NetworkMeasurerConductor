@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v3.2.0
+* @link https://coreui.io
+* Copyright (c) 2020 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+<html lang="en">
+  <head>
+    <%- include('modules/head') -%>
+  </head>
+
+  <body class="c-app">
+    <%- include('modules/sidebar') -%>
+
+    <div class="c-wrapper c-fixed-components">
+      <%- include('modules/header') -%>
+
+      <div class="c-body">
+        <main class="c-main">
+          <div class="container-fluid">
+            <div class="fade-in">
+              <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header">Iperf</div>
+                    <div class="card-body">
+                      <div class="col-12">
+                        <div class="row">
+                          <p>start</p>
+                          <form action="iperf-start" method="POST">
+                            <% for( let i = 0; i < nodes.length; i++ ) { %>
+                            <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
+                            <label for="<%= nodes[i]['node_id'] %>"> <%= nodes[i]['node_id'] %> </label>
+                            <% } %>
+                            <input type="submit" value="start" />
+                          </form>
+                        </div>
+                        <div class="row">
+                          <p>stop</p>
+                          <form action="iperf-stop" method="POST">
+                            <% for( let i = 0; i < nodes.length; i++ ) { %>
+                            <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
+                            <label for="<%= nodes[i]['node_id'] %>"> <%= nodes[i]['node_id'] %> </label>
+                            <% } %>
+                            <input type="submit" value="stop" />
+                          </form>
+                        </div>
+                      </div>
+                      <!-- /.row-->
+                      <div class="row col-12">
+                        <table class="table table-responsive-sm table-outline mb-0">
+                          <thead class="thead-light">
+                            <tr>
+                              <th>Count</th>
+                              <th>Iperf ID</th>
+                              <th>Node ID</th>
+                              <th>interval</th>
+                              <th>Option 1</th>
+                              <th>Option 2</th>
+                              <th>server IP</th>
+                              <th>server Port</th>
+                              <th>submit</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% for( let i = 0; i < iperf.length; i++ ) { %>
+                            <tr>
+                              <form action="iperf" method="POST">
+                                <input value="<%= iperf[i]["iperf_id"] %>" name="iperf-id" hidden>
+                                <td><%= i+1 %></td>
+                                <td><%= iperf[i]["iperf_id"] %></td>
+                                <td><input value="<%= iperf[i]["node_id"] %>" name="node-id" placeholder="node-id"></td>
+                                <td>
+                                  <input value="<%= iperf[i]["interval"] %>" name="iperf-interval" placeholder="iperf
+                                  interval">
+                                </td>
+                                <td>
+                                  <input value="<%= iperf[i]["option1"] %>" name="iperf-opt1"
+                                  placeholder="iperf-option1">
+                                </td>
+                                <td>
+                                  <input value="<%= iperf[i]["option2"] %>" name="iperf-opt2"
+                                  placeholder="iperf-option2">
+                                </td>
+                                <td>
+                                  <input value="<%= iperf[i]["server_ip"] %>" name="iperf-server"
+                                  placeholder="iperf-server">
+                                </td>
+                                <td>
+                                  <input value="<%= iperf[i]["server_port"] %>" name="iperf-port" placeholder="iperf
+                                  port">
+                                </td>
+                                <td><input type="submit" /></td>
+                              </form>
+                            </tr>
+                            <% } %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.col-->
+              </div>
+              <!-- /.row-->
+            </div>
+          </div>
+        </main>
+
+        <%- include('modules/footer') -%>
+      </div>
+    </div>
+
+    <!-- CoreUI and necessary plugins-->
+    <script src="vendors/@coreui/coreui/js/coreui.bundle.min.js"></script>
+    <!--[if IE]><!-->
+    <script src="vendors/@coreui/icons/js/svgxuse.min.js"></script>
+    <!--<![endif]-->
+    <!-- Plugins and scripts required by this view-->
+    <script src="vendors/@coreui/chartjs/js/coreui-chartjs.bundle.js"></script>
+    <script src="vendors/@coreui/utils/js/coreui-utils.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

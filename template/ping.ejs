@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v3.2.0
+* @link https://coreui.io
+* Copyright (c) 2020 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+<html lang="en">
+  <head>
+    <%- include('modules/head') -%>
+  </head>
+
+  <body class="c-app">
+    <%- include('modules/sidebar') -%>
+
+    <div class="c-wrapper c-fixed-components">
+      <%- include('modules/header') -%>
+
+      <div class="c-body">
+        <main class="c-main">
+          <div class="container-fluid">
+            <div class="fade-in">
+              <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header">Ping</div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="row">
+                            <p>start</p>
+                            <form action="ping-start" method="POST">
+                              <% for( let i = 0; i < nodes.length; i++ ) { %>
+                              <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
+                              <label for="<%= nodes[i]['node_id'] %>"> <%= nodes[i]['node_id'] %> </label>
+                              <% } %>
+                              <input type="submit" value="start" />
+                            </form>
+                          </div>
+                          <div class="row">
+                            <p>stop</p>
+                            <form action="ping-stop" method="POST">
+                              <% for( let i = 0; i < nodes.length; i++ ) { %>
+                              <input type="checkbox" name="<%= nodes[i]['node_id'] %>" />
+                              <label for="<%= nodes[i]['node_id'] %>"> <%= nodes[i]['node_id'] %> </label>
+
+                              <% } %>
+                              <input type="submit" value="stop" />
+                            </form>
+                          </div>
+                        </div>
+                        <!-- /.row-->
+                        <div class="row col-12">
+                          <table class="table table-responsive-sm table-outline mb-0">
+                            <thead class="thead-light">
+                              <tr>
+                                <th>Count</th>
+                                <th>Ping ID</th>
+                                <th>Node ID</th>
+                                <th>start on boot</th>
+                                <th>interval</th>
+                                <th>src</th>
+                                <th>dest</th>
+                                <th>load_size</th>
+                                <th>submit</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% for( let i = 0; i < ping.length; i++ ) { %>
+                              <tr>
+                                <form action="ping" method="POST">
+                                  <input value="<%= ping[i]["ping_id"] %>" name="ping-id" hidden>
+                                  <td><%= i+1 %></td>
+                                  <td><%= ping[i]["ping_id"] %></td>
+                                  <td>
+                                    <input value="<%= ping[i]["node_id"] %>" name="node-id" placeholder="node-id">
+                                  </td>
+                                  <!-- <td><input type="number" min="0" max="1" value="<%= ping[i]["start_on_boot"] %>" name="ping-start" placeholder="start on boot"></td> -->
+                                  <td>
+                                    <select type="number" name="ping-start" placeholder="start on boot">
+                                      <option>1</option>
+                                      <option>0</option>
+                                    </select>
+                                  </td>
+                                  <td>
+                                    <input value="<%= ping[i]["interval"] %>" name="ping-interval" placeholder="ping
+                                    interval">
+                                  </td>
+                                  <td><input value="<%= ping[i]["src"] %>" name="ping-src" placeholder="ping src"></td>
+                                  <td>
+                                    <input value="<%= ping[i]["dest"] %>" name="ping-dest" placeholder="ping dest">
+                                  </td>
+                                  <td>
+                                    <input value="<%= ping[i]["load_size"] %>" name="ping-load-size" placeholder="ping
+                                    load size">
+                                  </td>
+                                  <td><input type="submit" /></td>
+                                </form>
+                              </tr>
+                              <% } %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.col-->
+              </div>
+              <!-- /.row-->
+            </div>
+          </div>
+        </main>
+
+        <%- include('modules/footer') -%>
+      </div>
+    </div>
+
+    <!-- CoreUI and necessary plugins-->
+    <script src="vendors/@coreui/coreui/js/coreui.bundle.min.js"></script>
+    <!--[if IE]><!-->
+    <script src="vendors/@coreui/icons/js/svgxuse.min.js"></script>
+    <!--<![endif]-->
+    <!-- Plugins and scripts required by this view-->
+    <script src="vendors/@coreui/chartjs/js/coreui-chartjs.bundle.js"></script>
+    <script src="vendors/@coreui/utils/js/coreui-utils.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

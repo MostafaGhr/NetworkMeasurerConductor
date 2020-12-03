@@ -468,9 +468,7 @@
                             <th>Count</th>
                             <th>Node ID</th>
                             <th>Place</th>
-                            <th>Trace Schedule</th>
-                            <th>iperf Schedule</th>
-                            <th>iperf options</th>
+                            <th>Desc</th>
                             <th>submit</th>
                           </tr>
                         </thead>
@@ -481,10 +479,8 @@
                                 <input value="<%= nodes[i]["node_id"] %>" name="node-id" hidden>
                                 <td><%= i+1 %> </td>
                                 <td><%= nodes[i]["node_id"] %> </td>
-                                <td><%= nodes[i]["place"] %></td>
-                                <td><input value="<%= nodes[i]["traceIntervals"] %>" name="node-trace" placeholder="trace"></td>
-                                <td><input value="<%= nodes[i]["iperfIntervals"] %>" name="node-iperf" placeholder="iperf"></td>
-                                <td><input value="<%= nodes[i]["iperfOptions"] %>" name="node-iperfOptions" placeholder="options"></td>
+                                <td><input value="<%= nodes[i]["place"] %>" name="node-trace" placeholder="trace"></td>
+                                <td><input value="<%= nodes[i]["desc"] %>" name="node-desc" placeholder="desc"></td>
                                 <td><input type="submit"></td>  
                               </form>
                             </tr>

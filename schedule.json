@@ -2,9 +2,9 @@
   {
     "ID": "20",
     "place": "room1",
-    "traceIntervals": "* */1 * * * ? *",
     "iperfIntervals": "* */1 * * * ? *",
     "iperfOptions": "",
+    "traceIntervals": "* */1 * * * ? *",
     "traceDepth": "3",
     "traceDestination": "google.com"
   },
